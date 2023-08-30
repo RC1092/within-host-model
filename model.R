@@ -1,4 +1,4 @@
-  #R0 = 1.5872
+
 require(deSolve)
 require(dde)
 require(phaseR)
@@ -48,6 +48,10 @@ model <- function(t, y, parms) {
         b <- parms[11]# virus production rate
         e <- parms[12]
 
+        R0 <<- (exp(-u1 * tau2) * beta2 * 15 / u1) + ((b * exp(-u2 * tau3)*(1-e)* exp(-u1 * tau1) * (1-n) * beta1*15)/(u1 * u3 ))
+        
+        print(R0)
+       
         if (t < tau1) {
             T_lag <- y[1]
         } else {
@@ -81,11 +85,7 @@ model <- function(t, y, parms) {
 
 
         #expression fr R0
-        R0 = (exp(-u1 * tau2) * beta2 * 15 / u1) + ((b * exp(-u2 * tau3)*(1-e)* exp(-u1 * tau1) * (1-n) * beta1*15)/(u1 * u3 ))
-        print(R0)
-        
-      
-        
+        R0 <<- (exp(-u1 * tau2) * beta2 * 15 / u1) + ((b * exp(-u2 * tau3)*(1-e)* exp(-u1 * tau1) * (1-n) * beta1*15)/(u1 * u3 ))
 
         
         #model
@@ -101,16 +101,23 @@ model <- function(t, y, parms) {
     list(c(dTdt,dIdt,dVIdt,dVUdt))
 }
 
-out <- dede(y, times = times, func = model,parms)
+#out <- dede(y, times = times, func = model,parms)
+
+out <- c(0,0)
+for (x in 1:100){
+        rval <- (exp(-parms[5]*parms[7]) * parms[4] * 15 / parms[5]) + (parms[11] * exp(-parms[9] * parms[8]) *(1 - (x/100)) *exp(-parms[5]* parms[6])* (1- parms[2]) * parms[3] * 15)/(parms[5] * parms[10])
+        out <<- rbind(out,c(x/100,rval))
+    }
 
 out = as.data.frame(out)
 head(round(out,1))
-#print(out)
+out <- out[-c(1),]
+print(out)
 plot(
-    x = out$time, y = out$"T", col = "black", ylab = "number",type="l",
-    xlab = "Time", xlim=c(0,340), ylim=c(0,800)) #T
-  lines(x = out$time, y = out$"I", col = "green") # I
-  lines(x = out$time, y = out$"VI", col = "red")  # VI
-  lines(x = out$time, y = out$"VU", col = "blue") # VU
-  legend(300,600,legend = c("T","I","V_I","V_U"),col=c("black","green","red","blue"),lty=1:2, cex=0.8)
+    x = out$"V1", y = out$"V2", col = "blue", ylab = "R0",type="l",
+    xlab = expression(eta), xlim=c(0,1), ylim=c(0,4)) #T
+  #lines(x = out$time, y = out$"V2", col = "green") # I
+  #lines(x = out$time, y = out$"VI", col = "red")  # VI
+  #lines(x = out$time, y = out$"VU", col = "blue") # VU
+  #legend(300,600,legend = c("T","I","V_I","V_U"),col=c("black","green","red","blue"),lty=1:2, cex=0.8)
 
