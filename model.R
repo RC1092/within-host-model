@@ -1,3 +1,4 @@
+  #R0 = 1.5872
 require(deSolve)
 require(dde)
 require(phaseR)
@@ -82,7 +83,8 @@ model <- function(t, y, parms) {
         #expression fr R0
         R0 = (exp(-u1 * tau2) * beta2 * 15 / u1) + ((b * exp(-u2 * tau3)*(1-e)* exp(-u1 * tau1) * (1-n) * beta1*15)/(u1 * u3 ))
         print(R0)
-        #print(exp(-u1 * tau2) * beta2 * 15 / u1)
+        
+      
         
 
         
@@ -103,12 +105,12 @@ out <- dede(y, times = times, func = model,parms)
 
 out = as.data.frame(out)
 head(round(out,1))
-print(out)
+#print(out)
 plot(
     x = out$time, y = out$"T", col = "black", ylab = "number",type="l",
-    xlab = "Time", xlim=c(0,1000), ylim=c(0,700)) #T
+    xlab = "Time", xlim=c(0,340), ylim=c(0,800)) #T
   lines(x = out$time, y = out$"I", col = "green") # I
   lines(x = out$time, y = out$"VI", col = "red")  # VI
   lines(x = out$time, y = out$"VU", col = "blue") # VU
-  legend(900,600,legend = c("T","I","VI","VU"),col=c("black","green","red","blue"),lty=1:2, cex=0.8)
+  legend(300,600,legend = c("T","I","V_I","V_U"),col=c("black","green","red","blue"),lty=1:2, cex=0.8)
 
